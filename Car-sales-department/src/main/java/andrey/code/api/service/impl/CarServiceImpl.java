@@ -112,6 +112,9 @@ public class CarServiceImpl implements CarService {
         CarEntity carEntity = carRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Car with this id doesn't exist"));
 
+        if(carEntity.isSold()){
+            throw new BadRequestException("This car is already sold, you can't change its data");
+        }
 
         if (managerId != null) {
             ManagerEntity manager = managerRepository.findById(managerId)
