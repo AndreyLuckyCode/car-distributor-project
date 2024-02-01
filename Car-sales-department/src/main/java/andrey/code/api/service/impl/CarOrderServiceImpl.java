@@ -6,6 +6,7 @@ import andrey.code.api.exceptions.BadRequestException;
 import andrey.code.api.exceptions.NotFoundException;
 import andrey.code.api.factory.CarOrderDTOFactory;
 import andrey.code.api.service.CarOrderService;
+import andrey.code.rabbitmq.RabbitMQJsonProducer;
 import andrey.code.store.entity.CarOrderEntity;
 import andrey.code.store.entity.ManagerEntity;
 import andrey.code.store.repository.CarOrderRepository;
@@ -14,17 +15,21 @@ import jakarta.transaction.Transactional;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @RequiredArgsConstructor
 public class CarOrderServiceImpl implements CarOrderService {
 
+    RabbitMQJsonProducer jsonProducer;
     ManagerRepository managerRepository;
     CarOrderRepository carOrderRepository;
     CarOrderDTOFactory carOrderDTOFactory;
@@ -80,5 +85,19 @@ public class CarOrderServiceImpl implements CarOrderService {
         carOrderRepository.deleteById(id);
 
         return AckDTO.builder().answer(true).build();
+    }
+
+    @Override
+    @Transactional
+    public ResponseEntity<String> sendJsonCarOrderDTO(@RequestParam ("car_order_id") Long id) {
+
+            CarOrderEntity carOrder = carOrderRepository.findById(id).
+                    orElseThrow(() -> new NotFoundException("Car order with this id doesn't exist"));
+
+
+        CarOrderDTO carOrderDTO = carOrderDTOFactory.createCarOrderDTO(carOrder);
+
+        jsonProducer.sendJsonCarOrderDTO(carOrderDTO);
+        return ResponseEntity.ok("Json message sent to RabbitMQ...");
     }
 }

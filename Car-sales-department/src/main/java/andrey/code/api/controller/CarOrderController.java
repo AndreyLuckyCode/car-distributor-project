@@ -7,6 +7,7 @@ import andrey.code.store.entity.CarOrderEntity;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -21,6 +22,7 @@ public class CarOrderController {
     private static final String CREATE_ORDER = "/api/managers/{manager_id}/orders";
     private static final String GET_ALL_ORDERS = "/api/orders";
     private static final String DELETE_ORDER = "/api/orders/{car_order_id}";
+    private static final String SEND_ORDER = "/api/order/publish";
 
 
     @PostMapping(CREATE_ORDER)
@@ -44,5 +46,12 @@ public class CarOrderController {
             @PathVariable("car_order_id") Long id){
 
         return carOrderService.deleteCarOrder(id);
+    }
+
+
+    @PostMapping(SEND_ORDER)
+    public ResponseEntity<String> sendJsonCarOrderDTO(@RequestParam ("car_order_id") Long id){
+
+        return carOrderService.sendJsonCarOrderDTO(id);
     }
 }

@@ -7,6 +7,7 @@ import jakarta.persistence.Enumerated;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import java.io.Serializable;
 import java.time.Instant;
 
 @Data
@@ -14,7 +15,7 @@ import java.time.Instant;
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class CarOrderDTO {
+public class CarOrderDTO implements Serializable {
 
     Long id;
 
@@ -23,8 +24,8 @@ public class CarOrderDTO {
     @JsonProperty("attached_info")
     String attachedInfo;
 
-    @JsonProperty("order_date")
-    Instant orderDate = Instant.now();
+//    @JsonProperty("order_date")
+//    Instant orderDate = Instant.now();
 
     @Enumerated(EnumType.STRING)
     OrderStatus status;

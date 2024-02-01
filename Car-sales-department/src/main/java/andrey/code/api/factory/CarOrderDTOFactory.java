@@ -14,7 +14,7 @@ public class CarOrderDTOFactory {
                 .id(entity.getId())
                 .title(entity.getTitle())
                 .attachedInfo(entity.getAttachedInfo())
-                .orderDate(entity.getOrderDate())
+//                .orderDate(entity.getOrderDate())
                 .status(entity.getStatus())
                 .build();
     }
