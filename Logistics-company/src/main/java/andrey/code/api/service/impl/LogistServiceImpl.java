@@ -1,10 +1,11 @@
-package andrey.code.api.service;
+package andrey.code.api.service.impl;
 
 import andrey.code.api.dto.AckDTO;
 import andrey.code.api.dto.LogistDTO;
 import andrey.code.api.exceptions.BadRequestException;
 import andrey.code.api.exceptions.NotFoundException;
 import andrey.code.api.factory.LogistDTOFactory;
+import andrey.code.api.service.LogistService;
 import andrey.code.store.entity.LogistEntity;
 import andrey.code.store.repository.LogistRepository;
 import jakarta.transaction.Transactional;
@@ -19,7 +20,7 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-public class LogistServiceImpl implements LogistService{
+public class LogistServiceImpl implements LogistService {
 
     LogistRepository logistRepository;
     LogistDTOFactory logistDTOFactory;
