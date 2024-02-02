@@ -6,7 +6,9 @@ import andrey.code.api.exceptions.BadRequestException;
 import andrey.code.api.exceptions.NotFoundException;
 import andrey.code.api.factory.CarOrderDTOFactory;
 import andrey.code.api.service.CarOrderService;
+import andrey.code.rabbitmq.RabbitMQJsonProducer;
 import andrey.code.store.entity.CarOrderEntity;
+import andrey.code.store.entity.CarToBeDeliveredEntity;
 import andrey.code.store.entity.LogistEntity;
 import andrey.code.store.repository.CarOrderRepository;
 import andrey.code.store.repository.LogistRepository;
@@ -14,12 +16,16 @@ import jakarta.transaction.Transactional;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
+import java.util.Optional;
+
+import static andrey.code.store.enums.OrderStatus.ARRIVED;
 
 @Service
 @RequiredArgsConstructor
@@ -27,8 +33,10 @@ import java.util.List;
 public class CarOrderServiceImpl implements CarOrderService {
 
     LogistRepository logistRepository;
+    RabbitMQJsonProducer jsonProducer;
     CarOrderRepository carOrderRepository;
     CarOrderDTOFactory carOrderDTOFactory;
+
 
     @Override
     @Transactional
@@ -74,8 +82,11 @@ public class CarOrderServiceImpl implements CarOrderService {
 
             carOrderRepository.saveAndFlush(carOrderEntity);
 
-            return carOrderDTOFactory.createCarOrderDTO(carOrderEntity);
+            if(carOrderEntity.getStatus() == ARRIVED){
+                jsonProducer.sendJsonCarOrderDTO(carOrderDTOFactory.createCarOrderDTO(carOrderEntity));
+            }
 
+            return carOrderDTOFactory.createCarOrderDTO(carOrderEntity);
     }
 
 

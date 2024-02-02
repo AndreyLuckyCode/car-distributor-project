@@ -11,7 +11,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.stereotype.Service;
 
-import static andrey.code.store.enums.OrderStatus.ORDER_RECEIVED;
+import static andrey.code.store.entity.enums.OrderStatus.ARRIVED;
 
 @Service
 @RequiredArgsConstructor
@@ -21,7 +21,7 @@ public class RabbitMQJsonConsumer {
     CarOrderRepository carOrderRepository;
     private static final Logger LOGGER = LoggerFactory.getLogger(RabbitMQJsonConsumer.class);
 
-    @RabbitListener(queues = "car_order_queue1")
+    @RabbitListener(queues = "car_order_queue2")
     public void consumeJsonMessage(CarOrderDTO carOrderDTO) {
         LOGGER.info(String.format("Received Json message -> %s", carOrderDTO.toString()));
 
@@ -30,7 +30,7 @@ public class RabbitMQJsonConsumer {
         carOrder.setId(carOrderDTO.getId());
         carOrder.setTitle(carOrderDTO.getTitle());
         carOrder.setAttachedInfo(carOrderDTO.getAttachedInfo());
-        carOrder.setStatus(ORDER_RECEIVED);
+        carOrder.setStatus(ARRIVED);
 
         carOrderRepository.saveAndFlush(carOrder);
 

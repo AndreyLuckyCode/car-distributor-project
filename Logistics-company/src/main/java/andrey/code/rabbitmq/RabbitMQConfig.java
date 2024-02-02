@@ -15,11 +15,11 @@ import org.springframework.stereotype.Component;
 public class RabbitMQConfig {
 
     //    @Value("${rabbitmq.queue.name}")
-    String jsonQueue = "car_order_queue";
+    String jsonQueue = "car_order_queue2";
     //    @Value("${rabbitmq.exchange.name}")
-    String exchange = "car_order_exchange";
+    String exchange = "car_order_exchange2";
     //    @Value("${rabbitmq.routing.key}")
-    String jsonRoutingKey = "car_order_routing_key";
+    String jsonRoutingKey = "car_order_routing_key2";
 
 
     @Bean
