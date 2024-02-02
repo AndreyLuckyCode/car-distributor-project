@@ -31,9 +31,10 @@ public class CarOrderController {
     @PatchMapping(UPDATE_CAR_ORDER)
     public CarOrderDTO updateCarOrder(
             @PathVariable("car_order_id") Long id,
+            @RequestParam ("logist_id") Long logistId,
             @ModelAttribute CarOrderEntity carOrder){
 
-        return carOrderService.updateCarOrder(id, carOrder);
+        return carOrderService.updateCarOrder(id, logistId, carOrder);
     }
 
     @DeleteMapping(DELETE_CAR_ORDER)

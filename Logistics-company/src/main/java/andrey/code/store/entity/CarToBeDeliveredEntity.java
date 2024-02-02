@@ -21,8 +21,4 @@ public class CarToBeDeliveredEntity {
     String model;
 
     Integer price;
-
-    @ManyToOne
-    LogistEntity logist;
-
 }

@@ -27,9 +27,4 @@ public class LogistEntity {
     @OneToMany
     @JoinColumn(name = "logist_id")
     List<CarOrderEntity> carOrderEntity;
-
-    @OneToMany
-    @JoinColumn(name = "logist_id")
-    List<CarToBeDeliveredEntity> carToBeDeliveredEntity;
-
 }

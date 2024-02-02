@@ -9,6 +9,7 @@ import andrey.code.api.service.CarOrderService;
 import andrey.code.store.entity.CarOrderEntity;
 import andrey.code.store.entity.LogistEntity;
 import andrey.code.store.repository.CarOrderRepository;
+import andrey.code.store.repository.LogistRepository;
 import jakarta.transaction.Transactional;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -16,6 +17,7 @@ import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 
@@ -24,6 +26,7 @@ import java.util.List;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class CarOrderServiceImpl implements CarOrderService {
 
+    LogistRepository logistRepository;
     CarOrderRepository carOrderRepository;
     CarOrderDTOFactory carOrderDTOFactory;
 
@@ -47,25 +50,32 @@ public class CarOrderServiceImpl implements CarOrderService {
     @Transactional
     public CarOrderDTO updateCarOrder(
             @PathVariable("car_order_id") Long id,
+            @RequestParam (value = "logist_id", required = true) Long logistId,
             @ModelAttribute CarOrderEntity carOrder) {
 
 
         CarOrderEntity carOrderEntity = carOrderRepository.findById(id).orElseThrow(()
                 -> new BadRequestException("Car order with this id doesn't exist"));
 
-        if(carOrder.getTitle() != null && !carOrder.getTitle().trim().isEmpty()){
-            carOrderEntity.setTitle(carOrder.getTitle());
-        }
-        if(carOrder.getAttachedInfo() != null && !carOrder.getAttachedInfo().trim().isEmpty()){
-            carOrderEntity.setAttachedInfo(carOrder.getAttachedInfo());
-        }
-        if(carOrder.getStatus() != null){
-            carOrderEntity.setStatus(carOrder.getStatus());
-        }
+            LogistEntity logist = logistRepository.findById(logistId)
+                    .orElseThrow(() -> new NotFoundException("Logist with this id doesn't exist"));
 
-        carOrderRepository.saveAndFlush(carOrderEntity);
+            carOrderEntity.setLogist(logist);
 
-        return carOrderDTOFactory.createCarOrderDTO(carOrderEntity);
+            if (carOrder.getTitle() != null && !carOrder.getTitle().trim().isEmpty()) {
+                carOrderEntity.setTitle(carOrder.getTitle());
+            }
+            if (carOrder.getAttachedInfo() != null && !carOrder.getAttachedInfo().trim().isEmpty()) {
+                carOrderEntity.setAttachedInfo(carOrder.getAttachedInfo());
+            }
+            if (carOrder.getStatus() != null) {
+                carOrderEntity.setStatus(carOrder.getStatus());
+            }
+
+            carOrderRepository.saveAndFlush(carOrderEntity);
+
+            return carOrderDTOFactory.createCarOrderDTO(carOrderEntity);
+
     }
 
 
