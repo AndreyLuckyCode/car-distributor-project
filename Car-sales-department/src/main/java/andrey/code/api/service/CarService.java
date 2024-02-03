@@ -30,4 +30,8 @@ public interface CarService {
             @PathVariable("car_id") Long id);
 
     public List<CarDTO> getBookedCars();
+
+    public CarDTO getCarWithBookingInfo(
+            @PathVariable("car_id") Long id);
+
 }

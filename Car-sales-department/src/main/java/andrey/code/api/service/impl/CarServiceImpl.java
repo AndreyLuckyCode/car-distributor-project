@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 @Service
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
@@ -114,6 +115,29 @@ public class CarServiceImpl implements CarService {
         return bookedCars.stream()
                 .map(carDTOFactory::createNonSoldCarDTO)
                 .toList();
+    }
+
+
+    @Override
+    @Transactional
+    public CarDTO getCarWithBookingInfo(Long id) {
+        CarEntity car = carRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Car with this id doesn't exist"));
+
+        String bookingInfo = "";
+        if (car.getIsBooked()) {
+            long remainingTimeMillis = car.getBookingExpirationDate().getTime() - System.currentTimeMillis();
+            long remainingTimeHours = TimeUnit.MILLISECONDS.toHours(remainingTimeMillis);
+            long remainingTimeMinutes = TimeUnit.MILLISECONDS.toMinutes(remainingTimeMillis) % 60;
+            bookingInfo = "This car is booked. Remaining time: " + remainingTimeHours + " hours and " + remainingTimeMinutes + " minutes.";
+        } else {
+            bookingInfo = "This car is not booked.";
+        }
+
+        CarDTO carDTO = carDTOFactory.createNonSoldCarDTO(car);
+        carDTO.setBookingInfo(bookingInfo);
+
+        return carDTO;
     }
 
 

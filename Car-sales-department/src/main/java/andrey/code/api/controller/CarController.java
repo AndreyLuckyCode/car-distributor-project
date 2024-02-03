@@ -23,6 +23,7 @@ public class CarController {
     private static final String GET_ALL_CARS_BY_MANAGER_ID = "/api/managers/{manager_id}/cars";
     private static final String GET_NON_SOLD_CARS = "/api/cars/non_sold";
     private static final String GET_BOOKED_CARS = "/api/cars/booked";
+    private static final String GET_CAR_INFO = "/api/cars/{car_id}/info";
     private static final String GET_SOLD_CARS = "/api/cars/sold";
     private static final String UPDATE_OR_SALE_CAR = "/api/cars/{car_id}";
     private static final String DELETE_CAR = "/api/cars/{car_id}";
@@ -62,6 +63,14 @@ public class CarController {
 
         return carService.getBookedCars();
     }
+
+
+    @GetMapping(GET_CAR_INFO)
+    public CarDTO getCarsInfo(@PathVariable("car_id") Long id){
+
+        return carService.getCarWithBookingInfo(id);
+    }
+
 
     @PatchMapping(UPDATE_OR_SALE_CAR)
     public CarDTO updateOrSaleCar(

@@ -46,4 +46,8 @@ public class CarEntity {
     public void setIsBooked(boolean isBooked){
         this.isBooked = isBooked;
     }
+
+    public boolean getIsBooked() {
+        return isBooked;
+    }
 }

@@ -19,4 +19,9 @@ public class CarDTO {
 
     @JsonProperty("is_sold")
     boolean isSold;
+    private String bookingInfo;
+
+    public void setBookingInfo(String bookingInfo) {
+        this.bookingInfo = bookingInfo;
+    }
 }
