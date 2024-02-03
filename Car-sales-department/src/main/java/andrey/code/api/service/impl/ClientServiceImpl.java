@@ -134,13 +134,12 @@ public class ClientServiceImpl implements ClientService {
         Date currentDate = new Date();
         List<CarEntity> bookedCars = carRepository.findByIsBookedTrueAndBookingExpirationDateBefore(currentDate);
         for (CarEntity car : bookedCars) {
-            // Сброс бронирования
+
             car.setIsBooked(false);
             car.setClient(null);
             car.setBookingExpirationDate(null);
             carRepository.save(car);
 
-            // Сброс связи с клиентом
             ClientEntity client = car.getClient();
             if (client != null) {
                 client.setCar(null);
