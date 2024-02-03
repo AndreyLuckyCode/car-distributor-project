@@ -32,6 +32,9 @@ public class CarEntity {
     @ManyToOne
     ManagerEntity manager;
 
+    @OneToOne
+    ClientEntity client;
+
     public void setIsSold(boolean isSold) {
         this.isSold = isSold;
     }

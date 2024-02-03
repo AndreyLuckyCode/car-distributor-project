@@ -1,0 +1,99 @@
+package andrey.code.api.service.impl;
+
+import andrey.code.api.dto.AckDTO;
+import andrey.code.api.dto.ClientDTO;
+import andrey.code.api.exceptions.BadRequestException;
+import andrey.code.api.exceptions.NotFoundException;
+import andrey.code.api.factory.ClientDTOFactory;
+import andrey.code.api.service.ClientService;
+import andrey.code.store.entity.ClientEntity;
+import andrey.code.store.entity.ManagerEntity;
+import andrey.code.store.repository.ClientRepository;
+import jakarta.transaction.Transactional;
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
+import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
+
+import java.util.List;
+
+@Service
+@RequiredArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE,makeFinal = true)
+public class ClientServiceImpl implements ClientService {
+
+    ClientRepository clientRepository;
+    ClientDTOFactory clientDTOFactory;
+
+    @Override
+    @Transactional
+    public ClientDTO createClient(
+            @ModelAttribute ClientEntity client) {
+
+        if(client.getName() == null || client.getName().trim().isEmpty()){
+            throw new BadRequestException("Client name can't be empty");
+        }
+        if(client.getEmail() == null || client.getEmail().trim().isEmpty()){
+            throw new BadRequestException("Client email can't be empty");
+        }
+
+        clientRepository.saveAndFlush(client);
+
+        return clientDTOFactory.createClientDTO(client);
+    }
+
+
+    @Override
+    @Transactional
+    public List<ClientDTO> getAllClients() {
+
+        List<ClientEntity> clients = clientRepository.findAll();
+
+        if(clients.isEmpty()){
+            throw new NotFoundException("Clients list is empty");
+        }
+
+        return clients.stream()
+                .map(clientDTOFactory::createClientDTO)
+                .toList();
+    }
+
+
+    @Override
+    @Transactional
+    public ClientDTO updateClient(
+            @PathVariable("client_id") Long id,
+            @ModelAttribute ClientEntity client) {
+
+        ClientEntity clientEntity = clientRepository.findById(id).orElseThrow(()
+                -> new NotFoundException("Client with this id doesn't exist"));
+
+        if(client.getName() != null && !client.getName().trim().isEmpty()){
+            clientEntity.setName(client.getName());
+        }
+        if(client.getEmail() != null && !client.getEmail().trim().isEmpty()){
+            clientEntity.setEmail(client.getEmail());
+        }
+
+        clientRepository.saveAndFlush(clientEntity);
+
+        return clientDTOFactory.createClientDTO(clientEntity);
+    }
+
+
+    @Override
+    @Transactional
+    public AckDTO deleteClient(
+            @PathVariable("client_id") Long id) {
+
+        if(clientRepository.findById(id).isEmpty()){
+            throw new NotFoundException("Client with this id doesn't exist");
+        }
+
+        clientRepository.deleteById(id);
+
+        return AckDTO.builder().answer(true).build();
+    }
+}
