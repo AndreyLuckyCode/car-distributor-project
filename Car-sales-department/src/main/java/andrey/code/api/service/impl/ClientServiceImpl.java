@@ -14,6 +14,7 @@ import jakarta.transaction.Transactional;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -125,5 +126,26 @@ public class ClientServiceImpl implements ClientService {
         clientRepository.saveAndFlush(client);
 
         return AckDTO.builder().answer(true).build();
+    }
+
+
+    @Scheduled(fixedDelay = 24 * 60 * 60 * 1000) // Проверка каждые 24 часа
+    public void checkBookingExpiration() {
+        Date currentDate = new Date();
+        List<CarEntity> bookedCars = carRepository.findByIsBookedTrueAndBookingExpirationDateBefore(currentDate);
+        for (CarEntity car : bookedCars) {
+            // Сброс бронирования
+            car.setIsBooked(false);
+            car.setClient(null);
+            car.setBookingExpirationDate(null);
+            carRepository.save(car);
+
+            // Сброс связи с клиентом
+            ClientEntity client = car.getClient();
+            if (client != null) {
+                client.setCar(null);
+                clientRepository.save(client);
+            }
+        }
     }
 }
