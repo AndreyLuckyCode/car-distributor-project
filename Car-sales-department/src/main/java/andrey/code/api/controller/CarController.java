@@ -22,6 +22,7 @@ public class CarController {
     private static final String CREATE_CAR = "/api/cars";
     private static final String GET_ALL_CARS_BY_MANAGER_ID = "/api/managers/{manager_id}/cars";
     private static final String GET_NON_SOLD_CARS = "/api/cars/non_sold";
+    private static final String GET_BOOKED_CARS = "/api/cars/booked";
     private static final String GET_SOLD_CARS = "/api/cars/sold";
     private static final String UPDATE_OR_SALE_CAR = "/api/cars/{car_id}";
     private static final String DELETE_CAR = "/api/cars/{car_id}";
@@ -55,6 +56,12 @@ public class CarController {
         return carService.getSoldCars();
     }
 
+
+    @GetMapping(GET_BOOKED_CARS)
+    public List<CarDTO> getAllBookedCars(){
+
+        return carService.getBookedCars();
+    }
 
     @PatchMapping(UPDATE_OR_SALE_CAR)
     public CarDTO updateOrSaleCar(

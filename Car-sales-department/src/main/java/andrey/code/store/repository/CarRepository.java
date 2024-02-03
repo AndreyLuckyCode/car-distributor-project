@@ -13,4 +13,6 @@ public interface CarRepository extends JpaRepository<CarEntity, Long> {
     public List<CarEntity> findAllByIsSoldTrue();
 
     List<CarEntity> findByIsBookedTrueAndBookingExpirationDateBefore(Date currentDate);
+
+    List<CarEntity> findByIsBookedTrue();
 }

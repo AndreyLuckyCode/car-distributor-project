@@ -104,6 +104,21 @@ public class CarServiceImpl implements CarService {
 
     @Override
     @Transactional
+    public List<CarDTO> getBookedCars() {
+        List<CarEntity> bookedCars = carRepository.findByIsBookedTrue();
+
+        if(bookedCars.isEmpty()){
+            throw new NotFoundException("Booked cars list is empty");
+        }
+
+        return bookedCars.stream()
+                .map(carDTOFactory::createNonSoldCarDTO)
+                .toList();
+    }
+
+
+    @Override
+    @Transactional
     public CarDTO updateOrSellCar(
             @PathVariable("car_id") Long id,
             @RequestParam(value = "manager_id", required = false) Long managerId,

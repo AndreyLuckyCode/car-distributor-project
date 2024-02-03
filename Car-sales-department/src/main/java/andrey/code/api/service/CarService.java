@@ -28,4 +28,6 @@ public interface CarService {
 
     public AckDTO deleteCar(
             @PathVariable("car_id") Long id);
+
+    public List<CarDTO> getBookedCars();
 }
