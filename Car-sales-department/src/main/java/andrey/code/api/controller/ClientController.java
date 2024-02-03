@@ -3,6 +3,7 @@ package andrey.code.api.controller;
 import andrey.code.api.dto.AckDTO;
 import andrey.code.api.dto.ClientDTO;
 import andrey.code.api.service.ClientService;
+import andrey.code.store.entity.CarEntity;
 import andrey.code.store.entity.ClientEntity;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -22,6 +23,7 @@ public class ClientController {
     private static final String GET_ALL_CLIENTS = "/api/clients";
     private static final String UPDATE_CLIENTS = "/api/clients/{client_id}";
     private static final String DELETE_CLIENT = "/api/clients/{client_id}";
+    private static final String CAR_BOOKING = "/api/clients/{client_id}/booking";
 
 
     @PostMapping(CREATE_CLIENT)
@@ -50,6 +52,14 @@ public class ClientController {
             @PathVariable("client_id") Long id){
 
         return clientService.deleteClient(id);
+    }
+
+    @PatchMapping(CAR_BOOKING)
+    public AckDTO carBooking(
+            @PathVariable("client_id") Long id,
+            @RequestParam Long carId){
+
+        return clientService.carBooking(id, carId);
     }
 
 }

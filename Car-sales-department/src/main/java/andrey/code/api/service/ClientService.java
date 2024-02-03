@@ -2,6 +2,7 @@ package andrey.code.api.service;
 
 import andrey.code.api.dto.AckDTO;
 import andrey.code.api.dto.ClientDTO;
+import andrey.code.store.entity.CarEntity;
 import andrey.code.store.entity.ClientEntity;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -22,4 +23,8 @@ public interface ClientService {
 
     public AckDTO deleteClient(
             @PathVariable("client_id") Long id);
+
+    public AckDTO carBooking(
+            @PathVariable("client_id") Long id,
+            @RequestParam Long carId);
 }

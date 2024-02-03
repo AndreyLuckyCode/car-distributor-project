@@ -5,6 +5,8 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import java.util.Date;
+
 @Setter
 @Getter
 @Builder
@@ -34,6 +36,8 @@ public class CarEntity {
 
     @OneToOne
     ClientEntity client;
+
+    Date bookingExpirationDate;
 
     public void setIsSold(boolean isSold) {
         this.isSold = isSold;

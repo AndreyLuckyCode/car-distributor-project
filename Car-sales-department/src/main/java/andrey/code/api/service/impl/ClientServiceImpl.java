@@ -6,8 +6,9 @@ import andrey.code.api.exceptions.BadRequestException;
 import andrey.code.api.exceptions.NotFoundException;
 import andrey.code.api.factory.ClientDTOFactory;
 import andrey.code.api.service.ClientService;
+import andrey.code.store.entity.CarEntity;
 import andrey.code.store.entity.ClientEntity;
-import andrey.code.store.entity.ManagerEntity;
+import andrey.code.store.repository.CarRepository;
 import andrey.code.store.repository.ClientRepository;
 import jakarta.transaction.Transactional;
 import lombok.AccessLevel;
@@ -16,14 +17,18 @@ import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
 
+import java.util.Date;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 @Service
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE,makeFinal = true)
 public class ClientServiceImpl implements ClientService {
 
+    CarRepository carRepository;
     ClientRepository clientRepository;
     ClientDTOFactory clientDTOFactory;
 
@@ -93,6 +98,31 @@ public class ClientServiceImpl implements ClientService {
         }
 
         clientRepository.deleteById(id);
+
+        return AckDTO.builder().answer(true).build();
+    }
+
+    @Override
+    @Transactional
+    public AckDTO carBooking(
+            @PathVariable("client_id") Long id,
+            @RequestParam Long carId) {
+
+        ClientEntity client = clientRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Client with this id doesn't exist"));
+
+        CarEntity car = carRepository.findById(carId)
+                .orElseThrow(() -> new NotFoundException("Car with this id doesn't exist"));
+
+        car.setClient(client);
+        car.setIsBooked(true);
+        client.setCar(car);
+
+        Date bookingExpirationDate = new Date(System.currentTimeMillis() + TimeUnit.DAYS.toMillis(1));
+        car.setBookingExpirationDate(bookingExpirationDate);
+
+        carRepository.saveAndFlush(car);
+        clientRepository.saveAndFlush(client);
 
         return AckDTO.builder().answer(true).build();
     }
