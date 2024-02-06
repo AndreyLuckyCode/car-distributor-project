@@ -14,6 +14,7 @@
   <modules>
     <module>Car-sales-department</module>
       <module>Logistics-company</module>
+    <module>eureka-server</module>
   </modules>
 
 
